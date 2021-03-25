@@ -4,7 +4,7 @@ import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 
 class MainViewModel : CoroutineViewModel() {
     val notes = listOf(
-        Note("Разобраться с RecyclerView", "20.01.2021"),
+        Note("Помыть посуду"),
         Note("Забрать пальто из химчистки", "23.03.2021"),
         Note("Позвонить Ибрагиму"),
         Note("Заказать перламутровые пуговицы"),
