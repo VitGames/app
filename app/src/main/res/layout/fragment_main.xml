@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fafafa">
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Planner App"
+        app:title="Мои заметки"
         app:titleTextColor="@color/white" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -27,14 +27,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:spanCount="1"
+        app:spanCount="2"
         tools:listitem="@layout/note_list_item" />
 
     <Button
         android:id="@+id/btAdd"
         android:layout_width="wrap_content"
         android:layout_height="70dp"
-        android:background="@color/black"
+        android:background="@color/teal_200"
+        android:textColor="@color/white"
         android:text="ДОБАВИТЬ"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -45,6 +46,7 @@
         android:layout_height="72dp"
         android:ems="10"
         android:inputType="text"
+        android:textColor="@color/black"
         android:hint="Введите текст заметки"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btAdd" />
