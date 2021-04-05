@@ -21,6 +21,27 @@
         android:id="@+id/mainFragment"
         android:name="io.techmeskills.an02onl_plannerapp.screen.main.MainFragment"
         android:label="MainFragment"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_addNewFragment"
+            app:destination="@id/addNewFragment" />
+        <argument
+            android:name="txt_Note"
+            app:argType="string"
+            android:defaultValue="Empty" />
+        <argument
+            android:name="txt_Data"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="Empty" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewFragment"
+        android:name="io.techmeskills.an02onl_plannerapp.screen.add_new.AddNewFragment"
+        android:label="AddNewFragment" >
+        <action
+            android:id="@+id/action_addNewFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 
 </navigation>

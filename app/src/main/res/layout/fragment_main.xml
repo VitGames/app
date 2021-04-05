@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     >
 
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -23,7 +24,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/editText"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
@@ -31,25 +32,16 @@
         tools:listitem="@layout/note_list_item" />
 
     <Button
-        android:id="@+id/btAdd"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_NavToNew"
+        android:layout_width="70dp"
         android:layout_height="70dp"
-        android:background="@color/teal_200"
-        android:textColor="@color/white"
-        android:text="ДОБАВИТЬ"
+        android:layout_margin="26dp"
+        app:icon="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:ems="10"
-        android:inputType="text"
-        android:textColor="@color/black"
-        android:hint="Введите текст заметки"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btAdd" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,8 @@
 package io.techmeskills.an02onl_plannerapp.support
 
 import androidx.lifecycle.ViewModel
+import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
+import io.techmeskills.an02onl_plannerapp.screen.main.MainFragment
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

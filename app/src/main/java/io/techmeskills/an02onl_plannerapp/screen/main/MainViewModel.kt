@@ -29,10 +29,9 @@ class MainViewModel : CoroutineViewModel() {
         Note("Купить картошки"),
         Note("Скачать кино в самолёт", "25.03.2021")
     ))
-
-    fun addNewNote(text: String) {
+    fun addNewNote(textNote: String, date: String?) {
         launch {
-            val note = Note(text, null)
+            val note = Note(textNote, date)
             val list = liveData.value!!.toMutableList()
             list.add(0, note)
             liveData.postValue(list)
