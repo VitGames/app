@@ -1,19 +1,24 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import RecyclerItemClickListener
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
-import androidx.lifecycle.MutableLiveData
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.core.view.get
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
+import androidx.lifecycle.map
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import android.text.Layout
-import androidx.fragment.app.setFragmentResultListener
 import io.techmeskills.an02onl_plannerapp.support.setVerticalMargin
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main) {
@@ -36,17 +41,50 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         viewBinding.btnNavToNew.setOnClickListener {
             view.findNavController().navigate(R.id.action_mainFragment_to_addNewFragment)
         }
+        viewBinding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(context,
+            viewBinding.recyclerView,
+            object : RecyclerItemClickListener.OnItemClickListener {
+                override fun onItemClick(view: View?, position: Int) {
+                    val note: Note = viewModel.getItemById(position)
+                    val bundle = bundleOf(
+                        "note_id" to position,
+                        "txt_NoteEdit" to note.text,
+                        "txt_DataEdit" to note.date
+                    )
+                    setFragmentResult("EditKey", bundle)
+                    this@MainFragment.findNavController()
+                        .navigate(R.id.action_mainFragment_to_editNoteFragment, bundle)
+                }
+
+                override fun onLongItemClick(view: View?, position: Int) {
+                    viewModel.removeItemById(position)
+                }
+            })
+        )
         setFragmentResultListener("requestKey") { key, bundle ->
             val txtNote = bundle.getString("txt_Note")
             val txtData = bundle.getString("txt_Data")
             txtNote?.let {
-                viewModel.addNewNote(it,txtData)
+                viewModel.addNewNote(it, txtData)
+            }
+        }
+        setFragmentResultListener("EditKeyUpdate") { key, bundle ->
+            val id: Int = bundle.getInt("note_id")
+            val txtNote = bundle.getString("txt_NoteEditNew")
+            val txtDate = bundle.getString("txt_DataEditNew")
+            id.let {
+                val note: Note = viewModel.getItemById(id)
+                note.text = txtNote.toString()
+                note.date = txtDate.toString()
             }
         }
     }
 }
 
-
+/**
+ * val toast = Toast.makeText(context, "Работает", Toast.LENGTH_SHORT)
+toast.show()
+ */
 
 
 
