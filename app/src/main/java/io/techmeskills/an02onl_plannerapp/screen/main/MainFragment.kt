@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import io.techmeskills.an02onl_plannerapp.R
+import io.techmeskills.an02onl_plannerapp.database.Note
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.setVerticalMargin
@@ -38,6 +39,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         viewModel.liveData.observe(this.viewLifecycleOwner, Observer {
             viewBinding.recyclerView.adapter = NotesRecyclerViewAdapter(it)
         })
+        viewModel.invalidateList()
         viewBinding.btnNavToNew.setOnClickListener {
             view.findNavController().navigate(R.id.action_mainFragment_to_addNewFragment)
         }
@@ -47,7 +49,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                 override fun onItemClick(view: View?, position: Int) {
                     val note: Note = viewModel.getItemById(position)
                     val bundle = bundleOf(
-                        "note_id" to position,
+                        "note" to note,
                         "txt_NoteEdit" to note.text,
                         "txt_DataEdit" to note.date
                     )
@@ -55,19 +57,12 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                     this@MainFragment.findNavController()
                         .navigate(R.id.action_mainFragment_to_editNoteFragment, bundle)
                 }
-
                 override fun onLongItemClick(view: View?, position: Int) {
-                    viewModel.removeItemById(position)
+                    val note: Note = viewModel.getItemById(position)
+                    viewModel.removeItemByDao(note)
                 }
             })
         )
-        setFragmentResultListener("requestKey") { key, bundle ->
-            val txtNote = bundle.getString("txt_Note")
-            val txtData = bundle.getString("txt_Data")
-            txtNote?.let {
-                viewModel.addNewNote(it, txtData)
-            }
-        }
         setFragmentResultListener("EditKeyUpdate") { key, bundle ->
             val id: Int = bundle.getInt("note_id")
             val txtNote = bundle.getString("txt_NoteEditNew")
@@ -80,12 +75,3 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         }
     }
 }
-
-/**
- * val toast = Toast.makeText(context, "Работает", Toast.LENGTH_SHORT)
-toast.show()
- */
-
-
-
-

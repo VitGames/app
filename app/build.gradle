@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -76,4 +77,12 @@ dependencies {
     def nav_version = "1.0.0-alpha05"
     implementation "android.arch.navigation:navigation-fragment:$nav_version"
     implementation "android.arch.navigation:navigation-ui:$nav_version"
+
+    //ROOM
+    kapt 'androidx.room:room-compiler:2.2.6'
+    implementation 'androidx.room:room-runtime:2.2.6'
+    implementation 'androidx.room:room-ktx:2.2.6'
+
+    //DATASTORE (SHARED PREFS)
+    implementation 'androidx.datastore:datastore-preferences:1.0.0-alpha08'
 }

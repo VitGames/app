@@ -25,6 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="6dp"
         android:hint="Введите заметку"
+        android:maxLines="6"
+        android:lines="4"
         android:background="@drawable/edit_text_style"
         android:textColorHint="@color/grey"
         android:textColor="@color/black"
