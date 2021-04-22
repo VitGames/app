@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">AN02ONL_PlannerApp</string>
+    <string name="app_name">Мои заметки</string>
     <string name="welcome">Welcome</string>
     <string name="click_me">Click Me</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

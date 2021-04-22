@@ -5,6 +5,8 @@ import io.techmeskills.an02onl_plannerapp.database.DatabaseConstructor
 import io.techmeskills.an02onl_plannerapp.database.PlannerDatabase
 import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
 import io.techmeskills.an02onl_plannerapp.screen.main.NoteDetailsViewModel
+import io.techmeskills.an02onl_plannerapp.screen.main.SharedPref
+import io.techmeskills.an02onl_plannerapp.screen.main.UsersViewModel
 import io.techmeskills.an02onl_plannerapp.screen.splash.SplashViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
@@ -22,11 +24,15 @@ class PlannerApp : Application() {
     }
 
     private val viewModels = module {
-        viewModel { NoteDetailsViewModel(get()) }
-        viewModel { MainViewModel(get()) }
+        single { SharedPref(get()) }
+       // single { NoteDetailsViewModel(get(),get()) }
+        viewModel { NoteDetailsViewModel(get(),get()) }
+        viewModel { MainViewModel(get(),get()) }
+        viewModel { UsersViewModel(get(),get()) }
     }
     private val storageModule = module {
         single { DatabaseConstructor.create(get()) }  //создаем синглтон базы данных
         factory { get<PlannerDatabase>().notesDao() } //предоставляем доступ для конкретной Dao (в нашем случае NotesDao)
+        factory { get<PlannerDatabase>().userDao() }
     }
 }

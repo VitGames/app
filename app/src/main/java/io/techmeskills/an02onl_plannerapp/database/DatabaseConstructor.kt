@@ -7,14 +7,16 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [
-        Note::class
+        Note::class,
+        User::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 
 abstract class PlannerDatabase : RoomDatabase() {
     abstract fun notesDao(): NotesDao
+    abstract fun userDao(): UserDao
 }
 
 object DatabaseConstructor {

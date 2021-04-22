@@ -1,6 +1,7 @@
 package io.techmeskills.an02onl_plannerapp.database
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class NotesDao {
@@ -24,4 +25,7 @@ abstract class NotesDao {
 
     @Query("SELECT * FROM notes")
     abstract fun getAllNotes(): List<Note>
+
+    @Query("SELECT * FROM notes WHERE userId == :userId ORDER BY id DESC")
+    abstract fun getAllNotesFlowByUserId(userId: Long): Flow<List<Note>>
 }

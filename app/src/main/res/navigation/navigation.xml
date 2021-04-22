@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@+id/splashFragment">
+    app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/splashFragment"
@@ -24,7 +24,9 @@
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_addNewFragment"
-            app:destination="@id/addNewFragment" />
+            app:destination="@id/addNewFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@anim/nav_default_exit_anim" />
         <argument
             android:name="txt_Note"
             app:argType="string"
@@ -34,14 +36,30 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="Empty" />
+        <action
+            android:id="@+id/action_mainFragment_to_editNoteFragment"
+            app:destination="@id/editNoteFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_mainFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/addNewFragment"
         android:name="io.techmeskills.an02onl_plannerapp.screen.add_new.AddNewFragment"
-        android:label="AddNewFragment" >
+        android:label="AddNewFragment" />
+    <fragment
+        android:id="@+id/editNoteFragment"
+        android:name="io.techmeskills.an02onl_plannerapp.screen.main.EditNoteFragment"
+        android:label="EditNoteFragment" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="io.techmeskills.an02onl_plannerapp.screen.main.LoginFragment"
+        android:label="LoginFragment" >
         <action
-            android:id="@+id/action_addNewFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            android:id="@+id/action_loginFragment_to_splashFragment"
+            app:destination="@id/splashFragment" />
     </fragment>
 
 </navigation>

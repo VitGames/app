@@ -4,6 +4,7 @@ import RecyclerItemClickListener
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.get
 import androidx.fragment.app.setFragmentResult
@@ -39,7 +40,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         viewModel.liveData.observe(this.viewLifecycleOwner, Observer {
             viewBinding.recyclerView.adapter = NotesRecyclerViewAdapter(it)
         })
-        viewModel.invalidateList()
+       // viewModel.invalidateList()
         viewBinding.btnNavToNew.setOnClickListener {
             view.findNavController().navigate(R.id.action_mainFragment_to_addNewFragment)
         }
@@ -63,6 +64,10 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                 }
             })
         )
+        viewBinding.btnLogout.setOnClickListener {
+            viewModel.logout()
+            findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
+        }
         setFragmentResultListener("EditKeyUpdate") { key, bundle ->
             val id: Int = bundle.getInt("note_id")
             val txtNote = bundle.getString("txt_NoteEditNew")
@@ -74,4 +79,10 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             }
         }
     }
+    override val backPressedCallback: OnBackPressedCallback
+        get() = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
+            }
+        }
 }

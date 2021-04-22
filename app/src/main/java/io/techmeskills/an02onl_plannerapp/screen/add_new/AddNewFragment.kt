@@ -38,12 +38,6 @@ class AddNewFragment : NavigationFragment<FragmentAddNewBinding>(R.layout.fragme
                     text = viewBinding.editNewNote.text.toString(),
                     date = viewBinding.editData.text.toString()
                 ))
-//                val bundle = bundleOf(
-//                    "txt_Note" to viewBinding.editNewNote.text.toString(),
-//                    "txt_Data" to viewBinding.editData.text.toString()
-//
-//                )
-                //setFragmentResult("requestKey", bundle)
                 findNavController().popBackStack()
             } else {
                 val toast = Toast.makeText(context, "Поле ввода заметки пусто", Toast.LENGTH_SHORT)
