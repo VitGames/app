@@ -2,11 +2,13 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.*
 import androidx.room.Delete
 import androidx.viewbinding.ViewBinding
@@ -15,6 +17,7 @@ import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.database.Note
 import io.techmeskills.an02onl_plannerapp.database.NotesDao
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
+import io.techmeskills.an02onl_plannerapp.support.CloudManager
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,28 +27,31 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val notesDao: NotesDao, private val noteDetailsViewModel: NoteDetailsViewModel,
+    private val notesDao: NotesDao,
+    private val noteDetailsViewModel: NoteDetailsViewModel,
+    private val cloudManager: CloudManager,
+    private val pref: SharedPref,
+    private val context: Context
 ) : CoroutineViewModel() {
 
-    @Deprecated("new liveData yet")
-    val liveData1 = MutableLiveData(listOf(
-        Note(0, "Пример заметки"))
-    )
+    val liveData = noteDetailsViewModel.currentUserNotesFlow.flowOn(Dispatchers.IO).asLiveData()
 
-    val liveData = noteDetailsViewModel.currentUserNotesFlow.flowOn(Dispatchers.IO).map {
-        listOf(Note(text = "")) + it
-    }.asLiveData()
+    val progressLiveData = MutableLiveData<Boolean>()
 
-    @Deprecated("now use method in @NoteDetailsViewModel")
-    fun addNewNote(textNote: String, date: String?) {
-        launch {
-            val note = Note(
-                text = textNote,
-                date = date)
-            val list = liveData.value!!.toMutableList()
-            list.add(0, note)
-            //liveData.postValue(list)
-            invalidateList()
+     val internetConnectionLiveData = MutableLiveData<Boolean>()
+
+
+    fun checkInternetConnection(): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return if (networkInfo != null && networkInfo.isConnected) {
+            internetConnectionLiveData.postValue(true)
+            true
+        } else {
+            Toast.makeText(context, "No internet connection", Toast.LENGTH_LONG)
+                .show()
+            internetConnectionLiveData.postValue(false)
+            false
         }
     }
 
@@ -54,34 +60,24 @@ class MainViewModel(
         return list!![position]
     }
 
-    @Delete
-    fun removeItemById(position: Int) {
-        val list = liveData.value!!.toMutableList()
-        list.removeAt(position)
-        // liveData.postValue(list)
-    }
 
     fun removeItemByDao(note: Note) {
         launch {
             notesDao.deleteNote(note)
-            invalidateList()
         }
     }
 
-    @Delete
-    fun editNote(note: Note, textNote: String, date: String?) {
-
+    fun exportNotes() = launch {
+        val result = cloudManager.exportNotes()
+        progressLiveData.postValue(result)
     }
 
-    @Delete
-    fun invalidateList() {
-        launch {
-            val notes = notesDao.getAllNotes().toMutableList()
-            //liveData.postValue(notes)
-        }
+    fun importNotes() = launch {
+        val result = cloudManager.importNotes()
+        progressLiveData.postValue(result)
     }
 
     fun logout() {
-        noteDetailsViewModel.logout()
+        pref.putUserId(-1)
     }
 }

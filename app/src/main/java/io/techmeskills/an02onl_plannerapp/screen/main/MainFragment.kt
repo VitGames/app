@@ -1,20 +1,25 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
 import RecyclerItemClickListener
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.map
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.database.Note
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
@@ -29,6 +34,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
 
     private val viewModel: MainViewModel by viewModel()
 
+
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
         viewBinding.toolbar.setPadding(0, top, 0, 0)
         viewBinding.recyclerView.setVerticalMargin(marginBottom = bottom)
@@ -40,7 +46,14 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         viewModel.liveData.observe(this.viewLifecycleOwner, Observer {
             viewBinding.recyclerView.adapter = NotesRecyclerViewAdapter(it)
         })
-       // viewModel.invalidateList()
+        viewBinding.btnCloud.setOnClickListener {
+            if (viewModel.checkInternetConnection()) {
+                showCloudDialog()
+            } else {
+                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
         viewBinding.btnNavToNew.setOnClickListener {
             view.findNavController().navigate(R.id.action_mainFragment_to_addNewFragment)
         }
@@ -58,6 +71,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                     this@MainFragment.findNavController()
                         .navigate(R.id.action_mainFragment_to_editNoteFragment, bundle)
                 }
+
                 override fun onLongItemClick(view: View?, position: Int) {
                     val note: Note = viewModel.getItemById(position)
                     viewModel.removeItemByDao(note)
@@ -68,6 +82,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             viewModel.logout()
             findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
         }
+
         setFragmentResultListener("EditKeyUpdate") { key, bundle ->
             val id: Int = bundle.getInt("note_id")
             val txtNote = bundle.getString("txt_NoteEditNew")
@@ -78,7 +93,62 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                 note.date = txtDate.toString()
             }
         }
+        viewModel.progressLiveData.observe(this.viewLifecycleOwner)
+        { success ->
+            if (success.not()) {
+                Toast.makeText(requireContext(), "Filed to make cloud operation", Toast.LENGTH_LONG)
+                    .show()
+            }
+            Toast.makeText(requireContext(), "Cloud operation is success", Toast.LENGTH_LONG)
+                .show()
+            viewBinding.progressBar.isVisible = false
+        }
+        viewModel.internetConnectionLiveData.observe(this.viewLifecycleOwner)
+        { connection ->
+            if (connection.not()) {
+                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
     }
+
+    private fun showCloudDialog() {
+        val connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Cloud storage")
+            .setMessage("Please, pick cloud action")
+            .setPositiveButton("Import") { dialog, _ ->
+                viewBinding.progressBar.isVisible = true
+                viewModel.checkInternetConnection()
+                if (viewModel.checkInternetConnection()) {//(networkInfo != null && networkInfo.isConnected) {
+                    viewModel.importNotes()
+                    dialog.cancel()
+                } else {
+                    viewBinding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(),
+                        "No internet connection",
+                        Toast.LENGTH_LONG)
+                        .show()
+                }
+            }.setNegativeButton("Export") { dialog, _ ->
+                viewModel.checkInternetConnection()
+                viewBinding.progressBar.isVisible = true
+                if (viewModel.checkInternetConnection()) {//(networkInfo != null && networkInfo.isConnected) {
+                    viewModel.exportNotes()
+                    dialog.cancel()
+                } else {
+                    viewBinding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(),
+                        "No internet connection",
+                        Toast.LENGTH_LONG)
+                        .show()
+                }
+            }.show()
+    }
+
+
     override val backPressedCallback: OnBackPressedCallback
         get() = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -86,3 +156,5 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             }
         }
 }
+
+

@@ -38,9 +38,10 @@ class EditNoteFragment() :
         viewBinding.btnEdit.setOnClickListener {
             if (viewBinding.editNote.text.isNotBlank()) {
                 viewModel.updateNote(Note(
-                   // id = note!!.id,
+                    id = note!!.id,
                     text = viewBinding.editNote.text.toString(),
-                    date = viewBinding.editData.text.toString()
+                    date = viewBinding.editData.text.toString(),
+                    userId = 0
                 ))
                 findNavController().popBackStack()
             } else {

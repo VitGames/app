@@ -12,5 +12,6 @@ open class Note(
     val id: Long = 0L,
     var text: String,
     var date: String? = null,
-    val userId: Long = -1// -1 нужно что бы не вводить его при создании промежуточной заметки
+    val userId: Long = -1,// -1 нужно что бы не вводить его при создании промежуточной заметки
+    val fromCloud: Boolean = false
 ) : Parcelable

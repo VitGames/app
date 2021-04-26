@@ -14,7 +14,6 @@ class SharedPref(val context: Context) {
 
     fun putUserId(userId: Long) {
         editor.putLong("userId", userId)
-        //editor.apply()
         editor.commit()
     }
 
