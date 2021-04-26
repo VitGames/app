@@ -24,7 +24,7 @@ class SplashFragment : NavigationFragment<FragmentSplashBinding>(R.layout.fragme
         super.onViewCreated(view, savedInstanceState)
         viewBinding.root.postDelayed({
             findNavController().navigateSafe(SplashFragmentDirections.toMainFragment())
-        }, 600)
+        }, 300)
     }
 
 }

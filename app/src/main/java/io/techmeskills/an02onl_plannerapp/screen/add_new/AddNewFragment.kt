@@ -9,14 +9,19 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import io.techmeskills.an02onl_plannerapp.R
+import io.techmeskills.an02onl_plannerapp.database.Note
+import io.techmeskills.an02onl_plannerapp.database.NotesDao
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentAddNewBinding
+import io.techmeskills.an02onl_plannerapp.screen.main.NoteDetailsViewModel
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
+import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddNewFragment : NavigationFragment<FragmentAddNewBinding>(R.layout.fragment_add_new) {
     override val viewBinding: FragmentAddNewBinding by viewBinding()
+    private val viewModel: NoteDetailsViewModel by viewModel()
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
         viewBinding.toolbar.setPadding(0, top, 0, 0)
@@ -28,14 +33,13 @@ class AddNewFragment : NavigationFragment<FragmentAddNewBinding>(R.layout.fragme
         val dateText: String = dateFormat.format(currentDate)
         viewBinding.editData.setText(dateText)
         viewBinding.btnAddNew.setOnClickListener {
-            if(viewBinding.editNewNote.text.isNotBlank()){
-            val bundle = bundleOf(
-                "txt_Note" to viewBinding.editNewNote.text.toString(),
-                "txt_Data" to viewBinding.editData.text.toString()
-            )
-            setFragmentResult("requestKey", bundle)
+            if (viewBinding.editNewNote.text.isNotBlank()) {
+                viewModel.addNewNote(Note(
+                    text = viewBinding.editNewNote.text.toString(),
+                    date = viewBinding.editData.text.toString()
+                ))
                 findNavController().popBackStack()
-        } else{
+            } else {
                 val toast = Toast.makeText(context, "Поле ввода заметки пусто", Toast.LENGTH_SHORT)
                 toast.show()
             }

@@ -1,48 +1,83 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import androidx.lifecycle.MutableLiveData
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.*
+import androidx.room.Delete
 import androidx.viewbinding.ViewBinding
 import by.kirich1409.viewbindingdelegate.viewBinding
 import io.techmeskills.an02onl_plannerapp.R
+import io.techmeskills.an02onl_plannerapp.database.Note
+import io.techmeskills.an02onl_plannerapp.database.NotesDao
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
+import io.techmeskills.an02onl_plannerapp.support.CloudManager
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class MainViewModel : CoroutineViewModel() {
-    val liveData = MutableLiveData(listOf(
-        Note("Помыть посуду"),
-        Note("Забрать пальто из химчистки", "23.03.2021"),
-        Note("Позвонить Ибрагиму"),
-        Note("Заказать перламутровые пуговицы"),
-        Note("Избить соседа за шум ночью"),
-        Note("Выпить на неделе с Володей", "22.03.2021"),
-        Note("Починить кран"),
-        Note("Выбить ковры перед весной"),
-        Note("Заклеить сапог жене"),
-        Note("Купить картошки"),
-        Note("Скачать кино в самолёт", "25.03.2021")
-    ))
-    fun addNewNote(textNote: String, date: String?) {
-        launch {
-            val note = Note(textNote, date)
-            val list = liveData.value!!.toMutableList()
-            list.add(0, note)
-            liveData.postValue(list)
+class MainViewModel(
+    private val notesDao: NotesDao,
+    private val noteDetailsViewModel: NoteDetailsViewModel,
+    private val cloudManager: CloudManager,
+    private val pref: SharedPref,
+    private val context: Context
+) : CoroutineViewModel() {
+
+    val liveData = noteDetailsViewModel.currentUserNotesFlow.flowOn(Dispatchers.IO).asLiveData()
+
+    val progressLiveData = MutableLiveData<Boolean>()
+
+     val internetConnectionLiveData = MutableLiveData<Boolean>()
+
+
+    fun checkInternetConnection(): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return if (networkInfo != null && networkInfo.isConnected) {
+            internetConnectionLiveData.postValue(true)
+            true
+        } else {
+            Toast.makeText(context, "No internet connection", Toast.LENGTH_LONG)
+                .show()
+            internetConnectionLiveData.postValue(false)
+            false
         }
     }
+
+    fun getItemById(position: Int): Note {
+        val list: List<Note>? = liveData.value
+        return list!![position]
+    }
+
+
+    fun removeItemByDao(note: Note) {
+        launch {
+            notesDao.deleteNote(note)
+        }
+    }
+
+    fun exportNotes() = launch {
+        val result = cloudManager.exportNotes()
+        progressLiveData.postValue(result)
+    }
+
+    fun importNotes() = launch {
+        val result = cloudManager.importNotes()
+        progressLiveData.postValue(result)
+    }
+
+    fun logout() {
+        pref.putUserId(-1)
+    }
 }
-
-class Note(
-    var text: String,
-    var date: String? = null
-)
-
-
-
