@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -31,18 +33,19 @@ class MainViewModel(
     private val noteDetailsViewModel: NoteDetailsViewModel,
     private val cloudManager: CloudManager,
     private val pref: SharedPref,
-    private val context: Context
+    private val context: Context,
 ) : CoroutineViewModel() {
 
     val liveData = noteDetailsViewModel.currentUserNotesFlow.flowOn(Dispatchers.IO).asLiveData()
 
     val progressLiveData = MutableLiveData<Boolean>()
 
-     val internetConnectionLiveData = MutableLiveData<Boolean>()
+    val internetConnectionLiveData = MutableLiveData<Boolean>()
 
 
     fun checkInternetConnection(): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
         return if (networkInfo != null && networkInfo.isConnected) {
             internetConnectionLiveData.postValue(true)
@@ -74,10 +77,19 @@ class MainViewModel(
 
     fun importNotes() = launch {
         val result = cloudManager.importNotes()
-        progressLiveData.postValue(result)
+        if (result) {
+            progressLiveData.postValue(result)
+        } else {
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, "Invalid import: notes already exist", Toast.LENGTH_SHORT).show()
+                progressLiveData.postValue(result)
+            }
+        }
     }
+
 
     fun logout() {
         pref.putUserId(-1)
     }
+
 }

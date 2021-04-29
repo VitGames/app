@@ -19,7 +19,6 @@ class NoteDetailsViewModel(private val notesDao: NotesDao, private val sharedPre
 
     fun addNewNote(note: Note) {
         launch {
-            // notesDao.saveNote(note)
             notesDao.saveNote(Note(
                 text = note.text,
                 date = note.date,

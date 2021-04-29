@@ -22,6 +22,10 @@ class LoginFragment() : NavigationFragment<FragmentLoginBinding>(R.layout.fragme
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val sharedPref = SharedPref(requireContext())
+        if (sharedPref.getUserId() != (-1).toLong()) {
+            view.findNavController().navigate(R.id.mainFragment)
+        }
         super.onViewCreated(view, savedInstanceState)
 
         viewBinding.confirmButton.setOnClickListener {
@@ -34,6 +38,5 @@ class LoginFragment() : NavigationFragment<FragmentLoginBinding>(R.layout.fragme
                 toast.show()
             }
         }
-
     }
 }
