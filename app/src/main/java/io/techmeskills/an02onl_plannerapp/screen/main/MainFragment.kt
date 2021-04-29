@@ -96,13 +96,10 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         viewModel.progressLiveData.observe(this.viewLifecycleOwner)
         { success ->
             if (success.not()) {
-                Toast.makeText(requireContext(), "Filed to make cloud operation", Toast.LENGTH_LONG)
-                    .show()
-            }
-            Toast.makeText(requireContext(), "Cloud operation is success", Toast.LENGTH_LONG)
-                .show()
+                viewBinding.progressBar.isVisible = false
+            }else{
             viewBinding.progressBar.isVisible = false
-        }
+        }}
         viewModel.internetConnectionLiveData.observe(this.viewLifecycleOwner)
         { connection ->
             if (connection.not()) {
@@ -122,7 +119,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             .setPositiveButton("Import") { dialog, _ ->
                 viewBinding.progressBar.isVisible = true
                 viewModel.checkInternetConnection()
-                if (viewModel.checkInternetConnection()) {//(networkInfo != null && networkInfo.isConnected) {
+                if (viewModel.checkInternetConnection()) {
                     viewModel.importNotes()
                     dialog.cancel()
                 } else {
@@ -135,7 +132,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             }.setNegativeButton("Export") { dialog, _ ->
                 viewModel.checkInternetConnection()
                 viewBinding.progressBar.isVisible = true
-                if (viewModel.checkInternetConnection()) {//(networkInfo != null && networkInfo.isConnected) {
+                if (viewModel.checkInternetConnection()) {
                     viewModel.exportNotes()
                     dialog.cancel()
                 } else {

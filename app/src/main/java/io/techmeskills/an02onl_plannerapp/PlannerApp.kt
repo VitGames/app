@@ -4,10 +4,7 @@ import android.app.Application
 import io.techmeskills.an02onl_plannerapp.cloud.ApiInterface
 import io.techmeskills.an02onl_plannerapp.database.DatabaseConstructor
 import io.techmeskills.an02onl_plannerapp.database.PlannerDatabase
-import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
-import io.techmeskills.an02onl_plannerapp.screen.main.NoteDetailsViewModel
-import io.techmeskills.an02onl_plannerapp.screen.main.SharedPref
-import io.techmeskills.an02onl_plannerapp.screen.main.UsersViewModel
+import io.techmeskills.an02onl_plannerapp.screen.main.*
 import io.techmeskills.an02onl_plannerapp.screen.splash.SplashViewModel
 import io.techmeskills.an02onl_plannerapp.support.CloudManager
 import org.koin.android.ext.koin.androidContext
@@ -38,6 +35,6 @@ class PlannerApp : Application() {
     }
     private val cloudModule = module {
         factory { ApiInterface.get() }
-        factory { CloudManager(get(),get(),get()) }
+        factory { CloudManager(get(),get(),get(),get()) }
     }
 }

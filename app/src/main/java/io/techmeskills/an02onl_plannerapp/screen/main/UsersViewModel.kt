@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class UsersViewModel(private val userDao: UserDao, private val sharedPref: SharedPref, context: Context,) :
+class UsersViewModel(private val userDao: UserDao, private val sharedPref: SharedPref, context: Context) :
     CoroutineViewModel() {
 
     var isExists: Boolean = false
@@ -57,7 +57,7 @@ class UsersViewModel(private val userDao: UserDao, private val sharedPref: Share
                 //если есть, добавляем в prefs
                 putUserIdToPref(userName)
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(sharedPref.context, "Ник $userName есть в системе", Toast.LENGTH_SHORT)
+                    Toast.makeText(sharedPref.context, "$userName , добро пожаловать", Toast.LENGTH_SHORT)
                         .show()
                 }
             } else {
