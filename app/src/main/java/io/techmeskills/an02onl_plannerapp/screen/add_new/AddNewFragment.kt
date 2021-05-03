@@ -36,7 +36,8 @@ class AddNewFragment : NavigationFragment<FragmentAddNewBinding>(R.layout.fragme
             if (viewBinding.editNewNote.text.isNotBlank()) {
                 viewModel.addNewNote(Note(
                     text = viewBinding.editNewNote.text.toString(),
-                    date = viewBinding.editData.text.toString()
+                    date = viewBinding.editData.text.toString(),
+                    userName = ""
                 ))
                 findNavController().popBackStack()
             } else {

@@ -41,7 +41,7 @@ class EditNoteFragment() :
                     id = note!!.id,
                     text = viewBinding.editNote.text.toString(),
                     date = viewBinding.editData.text.toString(),
-                    userId = 0
+                    userName = note!!.userName
                 ))
                 findNavController().popBackStack()
             } else {

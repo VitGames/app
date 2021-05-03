@@ -2,9 +2,12 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.room.Delete
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 
 class SharedPref(val context: Context) {
@@ -17,18 +20,31 @@ class SharedPref(val context: Context) {
         editor.commit()
     }
 
-    fun getUserId(): Long {
-        return pref.getLong("userId", 0)
+    fun putUserName(userName: String) {
+        editor.putString("userName", userName)
+        editor.commit()
+    }
+
+    fun deleteUserName() {
+        editor.putString("userName", "")
+        editor.commit()
     }
 
     private fun getUserIdFlow(): Flow<Long> = flow {
         emit(pref.getLong("userId", 0))
     }
 
-     fun userIdFlow(): Flow<Long> = getUserIdFlow()
+    private fun userIdFlow(): Flow<Long> = getUserIdFlow()
+
 
     suspend fun userId(): Long = userIdFlow().first()
 
+    fun userNameFlow(): Flow<String?> = flow {
+        emit(pref.getString("userName", ""))
+    }
+
+    suspend fun userName(): String? = userNameFlow().first()
 }
+
 
 

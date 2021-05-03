@@ -12,6 +12,7 @@ import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.database.User
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentLoginBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
+import kotlinx.coroutines.flow.map
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
@@ -23,9 +24,10 @@ class LoginFragment() : NavigationFragment<FragmentLoginBinding>(R.layout.fragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val sharedPref = SharedPref(requireContext())
-        if (sharedPref.getUserId() != (-1).toLong()) {
-            view.findNavController().navigate(R.id.mainFragment)
-        }
+        //TODO add autologin
+//        if(sharedPref.userNameFlow.map { it.isNotEmpty() }){
+//
+//        }
         super.onViewCreated(view, savedInstanceState)
 
         viewBinding.confirmButton.setOnClickListener {
