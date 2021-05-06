@@ -24,7 +24,7 @@ class PlannerApp : Application() {
 
     private val viewModels = module {
         single { SharedPref(get()) }
-        viewModel { NoteDetailsViewModel(get(),get(),get()) }
+        viewModel { NoteDetailsViewModel(get(),get(),get(),get()) }
         viewModel { MainViewModel(get(),get(),get(),get(),get()) }
         viewModel { UsersViewModel(get(),get(),get()) }
     }

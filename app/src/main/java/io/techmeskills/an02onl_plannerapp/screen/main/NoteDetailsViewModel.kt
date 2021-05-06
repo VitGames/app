@@ -1,5 +1,8 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import android.content.Context
+import androidx.core.content.ContentProviderCompat.requireContext
+import io.techmeskills.an02onl_plannerapp.alarmservice.AlarmReceiver
 import io.techmeskills.an02onl_plannerapp.database.Note
 import io.techmeskills.an02onl_plannerapp.database.NotesDao
 import io.techmeskills.an02onl_plannerapp.database.User
@@ -16,6 +19,7 @@ class NoteDetailsViewModel(
     private val notesDao: NotesDao,
     private val sharedPref: SharedPref,
     private val userDao: UserDao,
+    private val context: Context
 ) :
     CoroutineViewModel() {
 
