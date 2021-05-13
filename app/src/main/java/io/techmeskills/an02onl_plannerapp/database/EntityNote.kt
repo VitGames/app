@@ -15,13 +15,13 @@ indices =  [Index(value = ["text"], unique = true)],
         onUpdate = ForeignKey.CASCADE
     )]
 )
-open class Note(
+data class Note(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     var text: String,
     var date: String? = null,
-
     @ColumnInfo(index = true, name = "userName")
     val userName: String,
-    val fromCloud: Boolean = false
+    val fromCloud: Boolean = false,
+    val alarmEnabled: Boolean = false,
 ) : Parcelable

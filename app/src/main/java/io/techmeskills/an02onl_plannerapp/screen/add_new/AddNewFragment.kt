@@ -1,5 +1,6 @@
 package io.techmeskills.an02onl_plannerapp.screen.add_new
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
@@ -8,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
@@ -31,9 +33,8 @@ class AddNewFragment : NavigationFragment<FragmentAddNewBinding>(R.layout.fragme
     private val viewModel: NoteDetailsViewModel by viewModel()
     private lateinit var alarmManager: AlarmManager
     private lateinit var alarmIntent: PendingIntent
-    private var calendar = Calendar.getInstance()
-    private val alarmReceiver: AlarmReceiver = AlarmReceiver()
-
+    private var selectedDate: Date = Date()
+    private val dateFormat: DateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
         viewBinding.toolbar.setPadding(0, top, 0, 0)
@@ -42,49 +43,27 @@ class AddNewFragment : NavigationFragment<FragmentAddNewBinding>(R.layout.fragme
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmIntent = PendingIntent.getBroadcast(context, 0, Intent(context, AlarmReceiver::class.java), 0)
-        val currentDate = Date()
-        val dateFormat: DateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        val dateText: String = dateFormat.format(currentDate)
-        viewBinding.editData.setText(dateText)
-        viewBinding.checkBoxNatification.setOnCheckedChangeListener { buttonView, isChecked ->
-            viewBinding.pickTimeBtn.isVisible = isChecked
-        }
-        viewBinding.pickTimeBtn.setOnClickListener {
-            calendar = Calendar.getInstance()
-            val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
-                calendar.set(Calendar.HOUR_OF_DAY, hour)
-                calendar.set(Calendar.MINUTE, minute)
-                viewBinding.pickTimeBtn.text = SimpleDateFormat("HH:mm").format(calendar.time)
-            }
-            TimePickerDialog(context,
-                timeSetListener,
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                true).show()
+        alarmIntent =
+            PendingIntent.getBroadcast(context, 0, Intent(context, AlarmReceiver::class.java), 0)
+        viewBinding.calendarView.addOnDateChangedListener { displayed, date ->
+            selectedDate = date
         }
         viewBinding.btnAddNew.setOnClickListener {
             if (viewBinding.editNewNote.text.isNotBlank()) {
-                viewModel.addNewNote(Note(
+                viewModel.addNewNote(
+                    Note(
                     text = viewBinding.editNewNote.text.toString(),
-                    date = viewBinding.editData.text.toString(),
-                    userName = ""
+                    date = dateFormat.format(selectedDate),
+                    userName = "",
+                    alarmEnabled = viewBinding.checkBox.isChecked
                 ))
-                if (viewBinding.checkBoxNatification.isChecked) {
-                   //alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmIntent)
-                    alarmReceiver.setAlarm(requireContext(),calendar.timeInMillis,viewBinding.editData.text.toString(),
-                        viewBinding.editNewNote.text.toString(),)
-
-                }
                 findNavController().popBackStack()
             } else {
-                val toast =
-                    Toast.makeText(context, "Поле ввода заметки пусто", Toast.LENGTH_SHORT)
-                toast.show()
+                Toast.makeText(context, "Поле ввода заметки пусто", Toast.LENGTH_SHORT).show()
             }
-
         }
     }
+
     override val backPressedCallback: OnBackPressedCallback
         get() = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

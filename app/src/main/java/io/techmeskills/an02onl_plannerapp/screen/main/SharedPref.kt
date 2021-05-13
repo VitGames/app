@@ -19,6 +19,9 @@ class SharedPref(val context: Context) {
         editor.putLong("userId", userId)
         editor.commit()
     }
+    fun getUserName(): String? {
+        return pref.getString("userName","default")
+    }
 
     fun putUserName(userName: String) {
         editor.putString("userName", userName)
@@ -40,7 +43,7 @@ class SharedPref(val context: Context) {
     suspend fun userId(): Long = userIdFlow().first()
 
     fun userNameFlow(): Flow<String?> = flow {
-        emit(pref.getString("userName", ""))
+        emit(pref.getString("userName", "default"))
     }
 
     suspend fun userName(): String? = userNameFlow().first()

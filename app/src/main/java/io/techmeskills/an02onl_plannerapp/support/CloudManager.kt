@@ -13,6 +13,7 @@ import io.techmeskills.an02onl_plannerapp.database.Note
 import io.techmeskills.an02onl_plannerapp.screen.main.NoteDetailsViewModel
 import io.techmeskills.an02onl_plannerapp.screen.main.UsersViewModel
 import kotlinx.coroutines.flow.first
+import java.lang.Exception
 import kotlin.coroutines.coroutineContext
 
 class CloudManager(
@@ -22,26 +23,33 @@ class CloudManager(
     private val context: Context,
 ) {
     suspend fun exportNotes(): Boolean {
-        val currentList: List<Note> = notesRepository.getCurrentUserNotes()
-        if (currentList.isEmpty()) {
-            Handler(Looper.getMainLooper()).post {
-                Toast.makeText(context, "Invalid export: notes does not exist", Toast.LENGTH_SHORT)
-                    .show()
+            val currentList: List<Note> = notesRepository.getCurrentUserNotes()
+            if (currentList.isEmpty()) {
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(context,
+                        "Invalid export: notes does not exist",
+                        Toast.LENGTH_SHORT)
+                        .show()
+                }
+                return false
+            } else {
+                val user = userRepository.getCurrentUserFlow().first()
+                val notes = notesRepository.getCurrentUserNotes()
+                val cloudUser = CloudUser(userName = user.name)
+                val cloudNotes =
+                    notes.map { CloudNote(id = it.id, title = it.text, date = it.date, alarmEnabled = it.alarmEnabled) }
+                val exportRequestBody =
+                    ExportNotesRequestBody(cloudUser, userRepository.phoneId, cloudNotes)
+                val exportResult = apiInterface.exportNotes(exportRequestBody).isSuccessful
+                if (exportResult) {
+                    notesRepository.setAllNotesSyncWithCloud()
+                }
+                return exportResult
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(context, "Export success", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
-            return false
-        } else {
-            val user = userRepository.getCurrentUserFlow().first()
-            val notes = notesRepository.getCurrentUserNotes()
-            val cloudUser = CloudUser( userName = user.name)
-            val cloudNotes = notes.map { CloudNote(id = it.id, title = it.text, date = it.date) }
-            val exportRequestBody =
-                ExportNotesRequestBody(cloudUser, userRepository.phoneId, cloudNotes)
-            val exportResult = apiInterface.exportNotes(exportRequestBody).isSuccessful
-            if (exportResult) {
-                notesRepository.setAllNotesSyncWithCloud()
-            }
-            return exportResult
-        }
     }
 
     suspend fun importNotes(): Boolean {
@@ -53,7 +61,8 @@ class CloudManager(
                 text = cloudNote.title,
                 date = cloudNote.date,
                 userName = user.name,
-                fromCloud = true
+                fromCloud = true,
+                alarmEnabled = cloudNote.alarmEnabled
             )
         }
         val currentList: List<Note> = notesRepository.getCurrentUserNotes()

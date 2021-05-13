@@ -11,15 +11,17 @@
     <Button
         android:id="@+id/btn_Edit"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="5dp"
+        android:backgroundTint="@color/black"
         android:text="Изменить"
-        android:layout_margin="6dp"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:backgroundTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editData" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editNote"
@@ -28,7 +30,7 @@
         android:layout_margin="6dp"
         android:hint="Введите заметку"
         android:maxLines="6"
-        android:lines="4"
+        android:lines="2"
         android:background="@drawable/edit_text_style"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
@@ -37,21 +39,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <EditText
-        android:id="@+id/editData"
+    <com.github.florent37.singledateandtimepicker.SingleDateAndTimePicker
+        android:id="@+id/editCalendar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="6dp"
-        android:layout_marginTop="112dp"
-        android:hint="DD.MM.YYYY"
-        android:background="@drawable/edit_text_style"
-        android:textColorHint="@color/white"
-        android:inputType="date"
-        android:padding="16dp"
-        android:textColor="@color/white"
+        android:layout_height="230dp"
+        android:alpha="0.65"
+        android:background="@color/black"
+        app:picker_todayText="@color/purple_200"
+        app:picker_selectedTextColor="@color/purple_200"
+        app:picker_selectorColor="@color/white"
+        app:picker_curved="true"
+        app:picker_cyclic="true"
+        app:picker_itemSpacing="6dp"
+        app:picker_mustBeOnFuture="true"
+        app:picker_textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editNote" />
+
+    <CheckBox
+        android:id="@+id/checkBoxNatification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Уведомление"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editCalendar" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
