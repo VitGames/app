@@ -23,14 +23,20 @@ abstract class NotesDao {
     @Delete
     abstract fun deleteNotes(notes: List<Note>)
 
+    @Query("DELETE FROM notes")
+    abstract fun clearTable()
+
     @Query("SELECT * FROM notes")
     abstract fun getAllNotes(): List<Note>
 
-    @Query("SELECT * FROM notes WHERE userId == :userId ORDER BY id DESC")
-    abstract fun getAllNotesFlowByUserId(userId: Long): Flow<List<Note>>
+//    @Query("SELECT * FROM notes WHERE userId == :userId ORDER BY id DESC")
+//    abstract fun getAllNotesFlowByUserId(userId: Long): Flow<List<Note>>
+//
+//    @Query("SELECT * FROM notes WHERE userId == :userId ORDER BY id DESC")
+//    abstract fun getAllNotesByUserId(userId: Long): List<Note>
 
-    @Query("SELECT * FROM notes WHERE userId == :userId ORDER BY id DESC")
-    abstract fun getAllNotesByUserId(userId: Long): List<Note>
+    @Query("SELECT * FROM notes WHERE id == :noteId LIMIT 1")
+    abstract fun getNoteById(noteId: Long): Note?
 
     @Query("UPDATE notes SET fromCloud = 1")
     abstract fun setAllNotesSyncWithCloud()

@@ -4,6 +4,7 @@ import RecyclerItemClickListener
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -27,7 +28,6 @@ import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.setVerticalMargin
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
 class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main) {
 
     override val viewBinding: FragmentMainBinding by viewBinding()
@@ -50,9 +50,25 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             if (viewModel.checkInternetConnection()) {
                 showCloudDialog()
             } else {
-                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG)
+                Toast.makeText(requireContext(), "Ошибка соединения", Toast.LENGTH_LONG)
                     .show()
             }
+        }
+        viewBinding.btnDeleteUser.setOnClickListener {
+            viewModel.checkInternetConnection()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Удаление аккаунта")
+                .setMessage("Вы уверены?")
+                .setPositiveButton("Да") { dialog, _ ->
+                    viewModel.delete()
+                    Handler().postDelayed({
+                        viewModel.logout()
+                    }, 1000)
+
+                    view.findNavController().navigate(R.id.loginFragment)
+                }.setNegativeButton("Нет") { dialog, _ ->
+                    dialog.cancel()
+                }.show()
         }
         viewBinding.btnNavToNew.setOnClickListener {
             view.findNavController().navigate(R.id.action_mainFragment_to_addNewFragment)
@@ -80,9 +96,8 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         )
         viewBinding.btnLogout.setOnClickListener {
             viewModel.logout()
-            findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
+            this@MainFragment.findNavController().navigate(R.id.loginFragment)
         }
-
         setFragmentResultListener("EditKeyUpdate") { key, bundle ->
             val id: Int = bundle.getInt("note_id")
             val txtNote = bundle.getString("txt_NoteEditNew")
@@ -97,26 +112,24 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         { success ->
             if (success.not()) {
                 viewBinding.progressBar.isVisible = false
-            }else{
-            viewBinding.progressBar.isVisible = false
-        }}
+            } else {
+                viewBinding.progressBar.isVisible = false
+            }
+        }
         viewModel.internetConnectionLiveData.observe(this.viewLifecycleOwner)
         { connection ->
             if (connection.not()) {
-                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG)
+                Toast.makeText(requireContext(), "Ошибка соединения", Toast.LENGTH_LONG)
                     .show()
             }
         }
     }
 
     private fun showCloudDialog() {
-        val connectivityManager =
-            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetworkInfo
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Cloud storage")
-            .setMessage("Please, pick cloud action")
-            .setPositiveButton("Import") { dialog, _ ->
+            .setTitle("Облачное хранилище")
+            .setMessage("Выберете действие:")
+            .setPositiveButton("Импорт") { dialog, _ ->
                 viewBinding.progressBar.isVisible = true
                 viewModel.checkInternetConnection()
                 if (viewModel.checkInternetConnection()) {
@@ -125,11 +138,11 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                 } else {
                     viewBinding.progressBar.isVisible = false
                     Toast.makeText(requireContext(),
-                        "No internet connection",
+                        "Ошибка соединения",
                         Toast.LENGTH_LONG)
                         .show()
                 }
-            }.setNegativeButton("Export") { dialog, _ ->
+            }.setNegativeButton("Экспорт") { dialog, _ ->
                 viewModel.checkInternetConnection()
                 viewBinding.progressBar.isVisible = true
                 if (viewModel.checkInternetConnection()) {
@@ -138,7 +151,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                 } else {
                     viewBinding.progressBar.isVisible = false
                     Toast.makeText(requireContext(),
-                        "No internet connection",
+                        "Ошибка соединения",
                         Toast.LENGTH_LONG)
                         .show()
                 }

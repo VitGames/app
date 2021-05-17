@@ -1,57 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/space"
-    android:screenOrientation="portrait"
-    >
+    android:screenOrientation="portrait">
 
     <Button
         android:id="@+id/btn_AddNew"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
+        android:backgroundTint="@color/black"
         android:text="Добавить"
-        android:layout_margin="6dp"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:backgroundTint="@color/black"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editData" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editNewNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="6dp"
-        android:hint="Введите заметку"
-        android:maxLines="6"
-        android:lines="4"
+        android:layout_margin="8dp"
         android:background="@drawable/edit_text_style"
-        android:textColorHint="@color/white"
+        android:hint="Введите заметку"
+        android:lines="2"
+        android:maxLines="6"
+        android:padding="14dp"
         android:textColor="@color/white"
-        android:padding="16dp"
+        android:textColorHint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <EditText
-        android:id="@+id/editData"
+    <com.github.florent37.singledateandtimepicker.SingleDateAndTimePicker
+        android:id="@+id/calendarView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="6dp"
-        android:layout_marginTop="112dp"
-        android:hint="DD.MM.YYYY"
-        android:background="@drawable/edit_text_style"
-        android:textColorHint="@color/white"
-        android:inputType="date"
-        android:padding="16dp"
-        android:textColor="@color/white"
+        android:layout_height="230dp"
+        android:layout_margin="8dp"
+        android:alpha="0.65"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editNewNote" />
+        app:layout_constraintTop_toBottomOf="@+id/editNewNote"
+        android:background="@color/black"
+        app:picker_todayText="@color/purple_200"
+        app:picker_selectedTextColor="@color/purple_200"
+        app:picker_selectorColor="@color/white"
+        app:picker_curved="true"
+        app:picker_cyclic="true"
+        app:picker_itemSpacing="6dp"
+        app:picker_mustBeOnFuture="true"
+        app:picker_textColor="@color/white" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -63,5 +65,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="Добавление новой заметки"
         app:titleTextColor="@color/white" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Уведомление"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

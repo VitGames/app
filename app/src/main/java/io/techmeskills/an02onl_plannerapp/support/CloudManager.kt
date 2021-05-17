@@ -13,6 +13,7 @@ import io.techmeskills.an02onl_plannerapp.database.Note
 import io.techmeskills.an02onl_plannerapp.screen.main.NoteDetailsViewModel
 import io.techmeskills.an02onl_plannerapp.screen.main.UsersViewModel
 import kotlinx.coroutines.flow.first
+import java.lang.Exception
 import kotlin.coroutines.coroutineContext
 
 class CloudManager(
@@ -22,26 +23,33 @@ class CloudManager(
     private val context: Context,
 ) {
     suspend fun exportNotes(): Boolean {
-        val currentList: List<Note> = notesRepository.getCurrentUserNotes()
-        if (currentList.isEmpty()) {
-            Handler(Looper.getMainLooper()).post {
-                Toast.makeText(context, "Invalid export: notes does not exist", Toast.LENGTH_SHORT)
-                    .show()
+            val currentList: List<Note> = notesRepository.getCurrentUserNotes()
+            if (currentList.isEmpty()) {
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(context,
+                        "Invalid export: notes does not exist",
+                        Toast.LENGTH_SHORT)
+                        .show()
+                }
+                return false
+            } else {
+                val user = userRepository.getCurrentUserFlow().first()
+                val notes = notesRepository.getCurrentUserNotes()
+                val cloudUser = CloudUser(userName = user.name)
+                val cloudNotes =
+                    notes.map { CloudNote(id = it.id, title = it.text, date = it.date, alarmEnabled = it.alarmEnabled) }
+                val exportRequestBody =
+                    ExportNotesRequestBody(cloudUser, userRepository.phoneId, cloudNotes)
+                val exportResult = apiInterface.exportNotes(exportRequestBody).isSuccessful
+                if (exportResult) {
+                    notesRepository.setAllNotesSyncWithCloud()
+                }
+                return exportResult
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(context, "Export success", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
-            return false
-        } else {
-            val user = userRepository.getCurrentUserFlow().first()
-            val notes = notesRepository.getCurrentUserNotes()
-            val cloudUser = CloudUser(userId = user.id, userName = user.name)
-            val cloudNotes = notes.map { CloudNote(id = it.id, title = it.text, date = it.date) }
-            val exportRequestBody =
-                ExportNotesRequestBody(cloudUser, userRepository.phoneId, cloudNotes)
-            val exportResult = apiInterface.exportNotes(exportRequestBody).isSuccessful
-            if (exportResult) {
-                notesRepository.setAllNotesSyncWithCloud()
-            }
-            return exportResult
-        }
     }
 
     suspend fun importNotes(): Boolean {
@@ -52,25 +60,21 @@ class CloudManager(
             Note(
                 text = cloudNote.title,
                 date = cloudNote.date,
-                userId = user.id,
-                fromCloud = true
+                userName = user.name,
+                fromCloud = true,
+                alarmEnabled = cloudNote.alarmEnabled
             )
         }
         val currentList: List<Note> = notesRepository.getCurrentUserNotes()
         val cloudList: List<Note> = notes
-        /**Если одна из текущих существующих заметок есть в облаке - import даст false */
-        if (currentList.isNotEmpty()) {
-            for (currentList in cloudList) {
-                if (currentList.text == cloudList[0].text) {
-                    return false
-                }
-            }
-        }
+        val result = (cloudList + currentList).distinctBy { it.text }
+        notesRepository.clearDataBase()
+        notesRepository.saveNotes(result)
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(context, "Import success", Toast.LENGTH_SHORT)
                 .show()
         }
-        notesRepository.saveNotes(notes)
+
         return response.isSuccessful
     }
 }

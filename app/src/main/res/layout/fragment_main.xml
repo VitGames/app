@@ -29,30 +29,50 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Мои заметки"
         app:titleTextColor="@color/white" />
+
+    <TextView
+        android:id="@+id/toolbarTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="serif"
+        android:text="Мои заметки"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+        app:layout_constraintStart_toStartOf="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="@+id/toolbar" />
 
     <ImageView
         android:id="@+id/btnLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="5dp"
-        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+        app:layout_constraintEnd_toStartOf="@+id/btnDeleteUser"
+        android:background="@drawable/ic_logout" />
+
+    <ImageView
+        android:id="@+id/btnDeleteUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_set_as" />
+        android:background="@drawable/ic_delete_user" />
 
     <ImageView
         android:id="@+id/btnCloud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="5dp"
-        android:background="@color/white"
+        android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintEnd_toStartOf="@+id/btnLogout"
-        app:srcCompat="@android:drawable/ic_menu_upload" />
+        android:background="@drawable/ic_cloud" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -71,11 +91,11 @@
 
     <Button
         android:id="@+id/btn_NavToNew"
-        android:layout_width="60dp"
+        android:layout_width="65dp"
         android:layout_height="70dp"
         android:layout_margin="30dp"
         android:layout_marginBottom="80dp"
-        app:icon="@android:drawable/ic_menu_edit"
+        app:icon="@drawable/ic_note_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

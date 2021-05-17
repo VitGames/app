@@ -13,18 +13,21 @@ import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class UsersViewModel(private val userDao: UserDao, private val sharedPref: SharedPref, context: Context) :
+class UsersViewModel(
+    private val userDao: UserDao,
+    private val sharedPref: SharedPref,
+    context: Context,
+) :
     CoroutineViewModel() {
 
     var isExists: Boolean = false
 
-    fun getCurrentUserFlow(): Flow<User> = sharedPref.userIdFlow().flatMapLatest {
-        userDao.getById(it)
-    }
+    fun getCurrentUserFlow(): Flow<User> = sharedPref.userNameFlow().map { User(it!!) }
     private fun addNewUser(user: User) {
         launch {
             if (!checkUserExists(user.name)) {
@@ -33,17 +36,8 @@ class UsersViewModel(private val userDao: UserDao, private val sharedPref: Share
         }
     }
 
-    private suspend fun getUserIdDao(userName: String): Long {
-        return withContext(Dispatchers.IO) {
-            userDao.getUserId(userName)
-        }
-    }
-
-    private fun putUserIdToPref(userName: String) {
-        launch {
-            val userId: Long = getUserIdDao(userName)
-            sharedPref.putUserId(userId)
-        }
+    private fun putUserNameToPref(userName: String) {
+        sharedPref.putUserName(userName)
     }
 
     private fun checkUserExists(userName: String): Boolean {
@@ -55,14 +49,16 @@ class UsersViewModel(private val userDao: UserDao, private val sharedPref: Share
         launch {
             if (checkUserExists(userName)) {
                 //если есть, добавляем в prefs
-                putUserIdToPref(userName)
+                putUserNameToPref(userName)
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(sharedPref.context, "$userName , добро пожаловать", Toast.LENGTH_SHORT)
+                    Toast.makeText(sharedPref.context,
+                        "$userName , добро пожаловать",
+                        Toast.LENGTH_SHORT)
                         .show()
                 }
             } else {
                 addNewUser(User(name = userName))
-                putUserIdToPref(userName)
+                putUserNameToPref(userName)
                 Handler(Looper.getMainLooper()).post {
                     Toast.makeText(sharedPref.context,
                         "Новыи пользователь: $userName",
@@ -71,9 +67,8 @@ class UsersViewModel(private val userDao: UserDao, private val sharedPref: Share
             }
         }
     }
-    fun logout(){
-        sharedPref.putUserId(-1)
-    }
+
+
     @SuppressLint("HardwareIds")
     val phoneId: String =
         Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)

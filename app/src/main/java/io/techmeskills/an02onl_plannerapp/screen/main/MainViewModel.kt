@@ -36,7 +36,7 @@ class MainViewModel(
     private val context: Context,
 ) : CoroutineViewModel() {
 
-    val liveData = noteDetailsViewModel.currentUserNotesFlow.flowOn(Dispatchers.IO).asLiveData()
+    val liveData = noteDetailsViewModel.currentUserNotesFlow.asLiveData()
 
     val progressLiveData = MutableLiveData<Boolean>()
 
@@ -81,15 +81,20 @@ class MainViewModel(
             progressLiveData.postValue(result)
         } else {
             Handler(Looper.getMainLooper()).post {
-                Toast.makeText(context, "Invalid import: notes already exist", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Invalid import: notes already exist", Toast.LENGTH_SHORT)
+                    .show()
                 progressLiveData.postValue(result)
             }
         }
     }
 
-
     fun logout() {
-        pref.putUserId(-1)
+        pref.deleteUserName()
     }
 
+    fun delete() {
+        launch {
+            noteDetailsViewModel.deleteUser()
+        }
+    }
 }
